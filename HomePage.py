@@ -71,25 +71,27 @@ def clean_publishers(publisher_str):
 @st.cache_data
 def load_data():
     df = pd.read_csv(
-        "games.csv",
+        "games2.csv",
         index_col=False)
     #Chunk of code for cleaning the messy data set 
 
-    truColNames = df.columns.tolist()
+    #truColNames = df.columns.tolist()
 
-    truColNames = list(filter(lambda item: item != 'DiscountDLC count', truColNames))
+    #truColNames = list(filter(lambda item: item != 'DiscountDLC count', truColNames))
+    #truColNames = list(filter(lambda item: item != 'Movies', truColNames))
     ### Drop 'DiscountDLC count' and reoranize headers
-    df= df.drop(['DiscountDLC count'],axis=1)
-    df.columns = truColNames
-
+    #df= df.drop(['DiscountDLC count'],axis=1)
+    #df.columns = truColNames
+    print("Number of columns after dropping 'DiscountDLC count':")
+    print(len(df.columns))
     ### Drop all Genre-less Games
     df = df.dropna(subset=['Genres'])
 
 
 
     ###Date Related Variables
-    df['Release date'] = pd.to_datetime(df['Release date'], errors='coerce')
-    df['age_days'] = (pd.Timestamp.today() - df['Release date']).dt.days
+    df['Release date'] = pd.to_datetime(df['Release date'], errors='coerce', format='mixed')
+    df['age_days'] = (pd.to_datetime('today') - df['Release date']).dt.days
     df['age_weeks'] = df['age_days'] / 7
 
     ### Review Related Variables
@@ -185,12 +187,18 @@ min_valueRevs, max_valueRevs = col1.slider('Number of Reviews:',
 
 
 
-
 filtered_df = df[(df['Price'] >= min_value) & (df['Price']  <= max_value)]
+
+print("Type of start_date:", type(start_date))
+print(type(pd.to_datetime(filtered_df['Release date']).dt.date))
+
 filtered_df = filtered_df[filtered_df['Genres'].str.contains(pattern, na=False)]
 filtered_df = filtered_df[(filtered_df['total_reviews'] >= min_valueRevs) & (filtered_df['total_reviews'] <= max_valueRevs)]
-filtered_df = filtered_df[(filtered_df['Release date'].dt.date >= start_date) & (filtered_df['Release date'].dt.date <= end_date)]
+filtered_df = filtered_df[(filtered_df['Release date'].dt.date >= start_date) & (filtered_df['Release date'].dt.date<= end_date)]
 filtered_df = filtered_df[filtered_df['HasPublisher'].str.contains(pattern2, na=False)]
+
+
+
 
 col2.write("### Filtered Games Table")
 col2.dataframe(filtered_df)
@@ -221,6 +229,9 @@ game2 = filtered_df[
     (filtered_df['age_days'] < avg_days)
 ].sort_values('reviews_per_day', ascending=False).head(1)
 
+
+print(game1)
+print(game2)
 # Combine the two games into one DataFrame (optional)
 selected_games = pd.concat([game1, game2])
 
