@@ -80,7 +80,7 @@ def load_data():
     truColNames = list(filter(lambda item: item != 'DiscountDLC count', truColNames))
     truColNames = list(filter(lambda item: item != 'Movies', truColNames))
     ### Drop 'DiscountDLC count' and reoranize headers
-    df= df.drop(['DiscountDLC count', 'About the game'],axis=1)
+    df= df.drop(['DiscountDLC count'],axis=1)
     df.columns = truColNames
 
     ### Drop all Genre-less Games
