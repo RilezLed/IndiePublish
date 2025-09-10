@@ -78,7 +78,6 @@ def load_data():
     truColNames = df.columns.tolist()
 
     truColNames = list(filter(lambda item: item != 'DiscountDLC count', truColNames))
-    truColNames = list(filter(lambda item: item != 'Movies', truColNames))
     ### Drop 'DiscountDLC count' and reoranize headers
     df= df.drop(['DiscountDLC count'],axis=1)
     df.columns = truColNames
